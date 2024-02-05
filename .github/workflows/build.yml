@@ -59,3 +59,33 @@ jobs:
           path: |
             ${{ steps.get_info.outputs.file_prefix }}-left.uf2
             ${{ steps.get_info.outputs.file_prefix }}-right.uf2
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get_info.outputs.file_prefix }}
+          release_name: Release ${{ steps.get_info.outputs.file_prefix }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset (Left Firmware)
+        id: upload-release-asset-left
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${{ steps.get_info.outputs.file_prefix }}-left.uf2
+          asset_name: ${{ steps.get_info.outputs.file_prefix }}-left.uf2
+          asset_content_type: application/octet-stream
+      - name: Upload Release Asset (Right Firmware)
+        id: upload-release-asset-right
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${{ steps.get_info.outputs.file_prefix }}-right.uf2
+          asset_name: ${{ steps.get_info.outputs.file_prefix }}-right.uf2
+          asset_content_type: application/octet-stream
